@@ -1,0 +1,11 @@
+html 
+    head
+        title Index Page
+    body 
+        h1 My name is #{name}
+        h2= description
+        hr
+        - for(let i = 0; i < 10; i++) {
+            p
+                a(href = "http://naver.com") Go to Naver #{i}
+        - }
