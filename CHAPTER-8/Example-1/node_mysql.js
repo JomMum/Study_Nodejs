@@ -3,13 +3,14 @@ const mysql = require('mysql');
 
 //DB와 연결
 let client = mysql.createConnection({
+    host: 'localhost',
     user: 'root',
-    password: '1234'
+    password: 'tlschs427',
+    database: 'Company'
 });
 
 //DB 쿼리 사용
-client.query('USE Company');
 client.query('SELECT * FROM products', function(error, result, fields) {
-    if(error) { console.log('쿼리 문장에 오류가 있습니다.'); }
+    if(error) { console.log(error); }
     else { console.log(result); }
 });
