@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src = "/socket.io/socket.io.js"></script>
+        <script>
+            //서버에 소켓 연결
+            window.onload = function() {
+                //소켓 생성
+                let socket = io.connect();
+
+                //소켓 이벤트 연결
+                socket.on('smart', function(data) {
+                    alert(data); //서버에서 전달받은 데이터를 화면에 출력
+                });
+
+                //문서 객체 이벤트 연결
+                //Public
+                document.getElementById('public_button').onclick = function() {
+                    //변수 선언
+                    let text = document.getElementById('text').value;
+
+                    //데이터 전송
+                    socket.emit('public_rint', text);
+                };
+                //Broadcast
+                document.getElementById('broadcast_button').onclick = function() {
+                    //변수 선언
+                    let text = document.getElementById('text').value;
+
+                    //데이터 전송
+                    socket.emit('broadcast_rint', text);
+                };
+                //Private
+                document.getElementById('private_button').onclick = function() {
+                    //변수 선언
+                    let text = document.getElementById('text').value;
+
+                    //데이터 전송
+                    socket.emit('private_rint', text);
+                };
+            };
+        </script>
+    </head>
+
+    <body>
+        <input type = "text" id = "text" />
+        <input type = "button" id = "public_button" value = "public echo" />
+        <input type = "button" id = "broadcast_button" value = "broadcast echo" />
+        <input type = "button" id = "private_button" value = "private echo" />
+    </body>
+</html>
