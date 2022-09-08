@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf8">
+        <script src = "/socket.io/socket.io.js"></script>
+        <script>
+            window.onload = function() {
+                //소켓 연결
+                let socket = io.connect();
+
+                //변수 선언
+                let name = prompt('이름을 입력해주세요.', '이름');
+
+                //데이터 전송
+                socket.emit('setname', name);
+
+                //데이터 전달받기
+                socket.on('responsename', function(data) {
+                    alert(data);
+                });
+
+                //문서 객체 이벤트 연결
+                document.getElementById('button').onclick = function() {
+                    socket.emit('getname');
+                };
+            }
+        </script>
+    </head>
+
+    <body>
+        <button id = "button">이름 가져오기</button>
+    </body>
+</html>
