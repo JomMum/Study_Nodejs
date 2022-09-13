@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<head>
+    <style>
+        .line { overflow: hidden;}
+        .seat {
+            margin: 2px; float: left;
+            width: 30px; height: 30px;
+            background: Red;
+            border-radius: 3px;
+        }
+
+        .enable { background: Grey; }
+        .enable:hover { background: Black; }
+        .disable { background : Red; }
+
+        .button {
+            width:40px; height: 40px;
+            background: blue;
+        }
+    </style>
+    <script src = "http://code.jquery.com/jquery-1.7.1.js"></script>
+    <script src = "/socket.io/socket.io.js"></script>
+
+    <!-- 소켓 생성 -->
+    <script>
+        //소켓 이벤트 수행
+        const socket = io.connect();
+
+        //이벤트 연결
+        socket.on('reserve', function(data) {
+            let $target = $('div[data-x = ' + data.x + '][data-y = ' + data.y + ']');
+            $target.removeClass('enable');
+            $target.addClass('disable');
+        });
+    </script>
+
+    <!-- 초기 좌석 생성 -->
+    <script>
+        $(document).ready(function() {
+            //좌석 선택 시
+            let onClickSeat = function() {
+                let x = $(this).attr('data-x');
+                let y = $(this).attr('data-y');
+
+                if($(this).hasClass('enable')) {
+                    if(confirm('해당 좌석을 예매하시겠습니까?')) {
+                    socket.emit('reserve', {
+                        x: x, y: y
+                    });
+                    }
+                    else {
+                        alert('예매가 취소되었습니다.');
+                    }
+                }
+            };
+
+            //Ajax 수행
+            $.getJSON('/seats', { dummy: new Date().getTime() }, function(data) {
+                $.each(data, function(indexY, line) {
+                    let $line = $('<div></div>').addClass('line'); //문서 객체 생성
+
+                    $.each(line, function(indexX, seat) {
+                        //문서 객체 생성 후 $line에 추가
+                        let $output = $('<div></div>', {
+                            'class': 'seat',
+                            'data-x': indexX,
+                            'data-y': indexY
+                        }).appendTo($line);
+
+                        if(seat == 1) {
+                            //좌석이 비어 있을 시, enable 클래스와 click 리스너 추가
+                            $output.addClass('enable').on('click', onClickSeat);
+                        } 
+                        else if(seat == 2) {
+                            //좌석 사용 불가 시 disable 클래스 추가
+                            $output.addClass('disable');
+                        }
+                    });
+
+                    //문서 객체 추가
+                    $line.appendTo('body');
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+</body>

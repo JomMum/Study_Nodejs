@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charseet = "utf8" />
+        <meta name = "viewport" content = "initial-scale = 1, user-scalable = no" />
+        <style>
+            * { margin: 0px; padding: 0px; }
+            html, body, #map { height: 100% }
+        </style>
+        <script src = "http://code.jquery.com/jquery-1.7.1.min.js"></script>
+        <script src = "http://maps.google.com/maps/api/js?sensor = false"></script>
+        <script src = "/socket.io/socket.io.js"></script>
+        <script>
+            $(document).ready(function() {
+                //변수 생성
+                let name = prompt('이름을 입력하세요.', '이름');
+                let socket = io.connect();
+                socket.emit('join', name); //해당 이름으로 방 접속
+
+                //지도 생성
+                let temp = document.getElementById('map');
+                let map = new google.maps.Map(temp, {
+                    zoom: 6,
+                    center: new google.maps.LatLng(37, 126),
+                    mapTypeId: google.maps.MapTypeId.ROADMAP
+                });
+
+                //초기 위치 생성
+                $.getJSON('/ShowData', { name: name }, function(data) {
+                    $.each(data, function(index, item) {
+                        setMarker(item.latitude, item.longitude);
+                    });
+                });
+
+                //소켓 이벤트 연결
+                socket.on('receive', function(data) {
+                    setMarker(data.latitude, data.longitude);
+                });
+            });
+        </script>
+    </head>
+
+    <body>
+        <div id = "map">
+        </div>
+    </body>
+</html>
